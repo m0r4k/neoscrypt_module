@@ -8,6 +8,7 @@ try:
 except ImportError:
     USE_CYTHON = False
 
+'''
 print("USE_CYTHON =", USE_CYTHON)
 
 library_dirs = []
@@ -25,11 +26,15 @@ if platform.system() == 'Windows':
 
     from distutils import cygwinccompiler
     cygwinccompiler.get_msvcr = get_msvcr
+'''
 
 neoscrypt_module = Extension('neoscrypt',
                              sources=['neoscryptmodule.c',
                                       'neoscrypt.c'],
-                             library_dirs=library_dirs)
+                             include_dirs=['.'])
+
+                             #library_dirs=library_dirs)
+
 
 setup (name = 'neoscrypt',
        version = '1.0',
