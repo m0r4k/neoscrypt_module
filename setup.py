@@ -27,8 +27,8 @@ if platform.system() == 'Windows':
     cygwinccompiler.get_msvcr = get_msvcr
 
 neoscrypt_module = Extension('neoscrypt',
-                             sources=['neoscrypt_module/neoscryptmodule.c',
-                                      'neoscrypt_module/neoscrypt.c'],
+                             sources=['neoscryptmodule.c',
+                                      'neoscrypt.c'],
                              library_dirs=library_dirs)
 
 setup (name = 'neoscrypt',
