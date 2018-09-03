@@ -1,36 +1,59 @@
 #include <Python.h>
-
 #include "neoscrypt.h"
 
-static PyObject *neoscrypt_getpowhash(PyObject *self, PyObject *args)
+static PyObject *neoscrypt_gost_getpowhash(PyObject *self, PyObject *args)
 {
-    const char *input;
-    int len;
-    if (!PyArg_ParseTuple(args, "y#", &input, &len))
+    char *output;
+    PyObject *value;
+
+#if PY_MAJOR_VERSION >= 3
+    PyBytesObject *input;
+#else
+    PyStringObject *input;
+#endif
+    if (!PyArg_ParseTuple(args, "S", &input))
         return NULL;
+    Py_INCREF(input);
+    output = PyMem_Malloc(32);
 
-    unsigned char *output = PyMem_Malloc(32);
-    neoscrypt((const unsigned char *)input, output);
-
-    PyObject *value = Py_BuildValue("y#", output, 32);
+#if PY_MAJOR_VERSION >= 3
+    neoscrypt((unsigned char *)PyBytes_AsString((PyObject*) input), (unsigned char *) output, 0);
+    //neoscrypt((unsigned char *)PyBytes_AsAString((PyOpbject*) input), (unsigned char *) output);
+#else
+    //neoscrypt((unsigned char *)PyString_AsString((PyObject*) input), (unsigned char*) output);
+    neoscrypt((unsigned char *)PyString_AsString((PyObject*) input), (unsigned char*) output, 0);
+#endif
+    Py_DECREF(input);
+#if PY_MAJOR_VERSION >= 3
+    value = Py_BuildValue("y#", output, 32);
+#else
+    value = Py_BuildValue("s#", output, 32);
+#endif
     PyMem_Free(output);
     return value;
 }
 
-static PyMethodDef NeoScryptMethods[] = {
-    { "getPoWHash", neoscrypt_getpowhash, METH_VARARGS, "Returns proof-of-work hash using NeoScrypt" },
+static PyMethodDef neoscryptMethods[] = {
+    { "getPoWHash", neoscrypt_gost_getpowhash, METH_VARARGS, "Returns the proof of work hash using neoscrypt hash" },
     { NULL, NULL, 0, NULL }
 };
 
-static struct PyModuleDef modDef =
-{
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef neoscryptModule = {
     PyModuleDef_HEAD_INIT,
     "neoscrypt",
-    "",
+    "...",
     -1,
-    NeoScryptMethods
+    neoscryptMethods
 };
 
 PyMODINIT_FUNC PyInit_neoscrypt(void) {
-    return PyModule_Create(&modDef);
+    return PyModule_Create(&neoscryptModule);
 }
+
+#else
+
+PyMODINIT_FUNC initneoscrypt(void) {
+    (void) Py_InitModule("neoscrypt", neoscryptMethods);
+}
+#endif
