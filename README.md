@@ -19,3 +19,13 @@ Documentation
 Refer to the following white paper for an introduction to NeoScrypt:
 http://phoenixcoin.org/archive/neoscrypt_v1.pdf
 
+
+Cythonized
+==========
+
+Compiling and installing as PythonModule (python2/python3)
+
+* sudo python3.6 -m pip install git+https://github.com/m0r4k/neoscrypt_module.git
+or
+* git clone git+https://github.com/m0r4k/neoscrypt_module.git && cd neoscrypt_module && sudo python3.6 setup.py install
+
